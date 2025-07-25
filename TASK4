@@ -1,0 +1,112 @@
+# ----------------------------------------------------
+# 🎯 Task 4: SMS Spam Detection App
+# 👨‍💻 Intern: Rishan . N
+# 🏫 Rajalakshmi Institute of Technology
+# 🏢 Internship at: CodSoft
+# ----------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# 📩 Sample SMS Dataset (Simulated)
+data = {
+    'text': [
+        "Free entry in 2 a weekly competition to win tickets!",
+        "Hey, are we still meeting for lunch today?",
+        "Congratulations! You've won a $1000 Walmart gift card!",
+        "Please call me back when you're free.",
+        "URGENT! Your account has been suspended. Click here.",
+        "Let's catch up soon, been a while!",
+        "You have been selected for a prize. Claim now!",
+        "Meeting is scheduled for 3 PM tomorrow.",
+        "Win a free vacation now by texting YES!",
+        "Thanks for your help the other day."
+    ],
+    'label': ['spam', 'ham', 'spam', 'ham', 'spam', 'ham', 'spam', 'ham', 'spam', 'ham']
+}
+df = pd.DataFrame(data)
+
+# 📊 Pie Chart – Spam vs Ham
+label_counts = df['label'].value_counts()
+plt.figure(figsize=(5, 5))
+plt.pie(label_counts, labels=label_counts.index, autopct='%1.1f%%',
+        colors=["tomato", "mediumseagreen"], shadow=True, startangle=140, explode=(0.1, 0))
+plt.title("Spam vs Ham Distribution")
+plt.tight_layout()
+plt.show()
+
+# ✨ TF-IDF Vectorization
+X = df['text']
+y = df['label']
+vectorizer = TfidfVectorizer(stop_words='english')
+X_vec = vectorizer.fit_transform(X)
+
+# 📦 Split Dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X_vec, y, test_size=0.3, stratify=y, random_state=42
+)
+
+# 🧠 Model Training
+nb_model = MultinomialNB()
+nb_model.fit(X_train, y_train)
+nb_pred = nb_model.predict(X_test)
+
+lr_model = LogisticRegression(max_iter=1000)
+lr_model.fit(X_train, y_train)
+lr_pred = lr_model.predict(X_test)
+
+svm_model = LinearSVC()
+svm_model.fit(X_train, y_train)
+svm_pred = svm_model.predict(X_test)
+
+# 📈 Evaluation
+nb_acc = round(accuracy_score(y_test, nb_pred) * 100, 2)
+lr_acc = round(accuracy_score(y_test, lr_pred) * 100, 2)
+svm_acc = round(accuracy_score(y_test, svm_pred) * 100, 2)
+
+nb_report = classification_report(y_test, nb_pred, zero_division=0)
+lr_report = classification_report(y_test, lr_pred, zero_division=0)
+svm_report = classification_report(y_test, svm_pred, zero_division=0)
+
+# 🔲 Confusion Matrices
+plt.figure(figsize=(15, 4))
+plt.subplot(1, 3, 1)
+sns.heatmap(confusion_matrix(y_test, nb_pred), annot=True, fmt='d', cmap='Blues')
+plt.title("Naive Bayes")
+
+plt.subplot(1, 3, 2)
+sns.heatmap(confusion_matrix(y_test, lr_pred), annot=True, fmt='d', cmap='Greens')
+plt.title("Logistic Regression")
+
+plt.subplot(1, 3, 3)
+sns.heatmap(confusion_matrix(y_test, svm_pred), annot=True, fmt='d', cmap='Oranges')
+plt.title("Support Vector Machine")
+
+plt.tight_layout()
+plt.show()
+
+# 🧾 Output Report
+print("----------------------------------------------------")
+print("📩 Task 4 Completed: SMS Spam Detection")
+print("👨‍💻 Submitted by: Rishan . N")
+print("🏫 Rajalakshmi Institute of Technology")
+print("🏢 Internship at: CodSoft")
+print("----------------------------------------------------\n")
+
+print(f"🧪 Naive Bayes Accuracy: {nb_acc}%\n{nb_report}")
+print(f"📊 Logistic Regression Accuracy: {lr_acc}%\n{lr_report}")
+print(f"💡 Support Vector Machine Accuracy: {svm_acc}%\n{svm_report}")
+
+print("----------------------------------------------------")
+print("👨‍💻 Submitted by: Rishan . N")
+print("🏫 Rajalakshmi Institute of Technology")
+print("🏢 Internship at: CodSoft")
+print("----------------------------------------------------")
